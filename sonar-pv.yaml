@@ -1,0 +1,44 @@
+{
+  "kind": "List",
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "sonar-data-volume",
+        "labels": {
+          "name": "sonar"
+        }
+      },
+      "spec": {
+        "capacity": {
+            "storage": "256Mi"
+          },
+        "accessModes": [ "ReadWriteOnce" ],
+        "hostPath": {
+          "path": "/var/export/sonar-vol/data"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "sonar-extensions-volume",
+        "labels": {
+          "name": "sonar"
+        }
+      },
+      "spec": {
+        "capacity": {
+            "storage": "256Mi"
+          },
+        "accessModes": [ "ReadWriteOnce" ],
+        "hostPath": {
+          "path": "/var/export/sonar-vol/extensions"
+        }
+      }
+    }
+  ]
+}
