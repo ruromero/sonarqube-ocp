@@ -192,7 +192,7 @@ SonarQube installs some plugins and defines some quality profiles for the most c
 First of all the Sonar server needs to be configured. Under the “Manage Jenkins” → “Configure System” menu there is the “SonarQube servers” section.
 In this section, select the “Enable injection of SonarQube server configuration as build environment variables” checkbox and click “Add SonarQube”. After that provide a name, the URL of the route and the token generated in the previous step.
 
-
+![jenkins configuration](https://github.com/ruromero/sonarqube-ocp/raw/master/images/jenkins_configuration.jpg)
 
 **NOTE:** The service endpoint (http://sonar:9000) should be enough for Jenkins to communicate with SonarQube, however some links are embedded in the Jenkins UI that redirects the user to the SonarQube web console but the browser won’t be able to show resolve the address as it is internal to the cluster.
 
@@ -288,10 +288,10 @@ Exiting "Trigger OpenShift Build" successfully; build "springbootwebapp-2" has c
 ```
 
 In the Jenkins project dashboard there are several references to SonarQube
-
+![jenkins build](https://github.com/ruromero/sonarqube-ocp/raw/master/images/jenkins_build.jpg)
 
 And the results can be accessed by following any of the SonarQube links.
-
+![sonarqube project](https://github.com/ruromero/sonarqube-ocp/raw/master/images/sonarqube.jpg)
 
 ## Further considerations
 In this example I didn’t configure any trigger for the builds but the Jenkins project can be configured to either periodically poll the Git repository, to do periodical builds or even to listen to Webhooks.
