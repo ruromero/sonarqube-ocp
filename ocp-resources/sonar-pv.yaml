@@ -17,7 +17,7 @@
           },
         "accessModes": [ "ReadWriteOnce" ],
         "hostPath": {
-          "path": "/var/export/sonar-vol/data"
+          "path": "/var/export/sonar-data-vol"
         }
       }
     },
@@ -36,7 +36,7 @@
           },
         "accessModes": [ "ReadWriteOnce" ],
         "hostPath": {
-          "path": "/var/export/sonar-vol/extensions"
+          "path": "/var/export/sonar-extensions-vol"
         }
       }
     }

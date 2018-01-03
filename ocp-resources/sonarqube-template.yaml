@@ -71,9 +71,12 @@ objects:
               - "-R"
               - "100:101"
               - "/sonar-data"
+              - "/sonar-extensions"
             volumeMounts:
-              - name: sonar-data
-                mountPath: "/sonar-data"
+              - mountPath: /sonar-data
+                name: ${SONARQUBE_SERVICE_NAME}-data
+              - mountPath: /sonar-extensions
+                name: ${SONARQUBE_SERVICE_NAME}-extensions
         containers:
         - capabilities: {}
           env:
@@ -102,9 +105,6 @@ objects:
               port: 9000
             initialDelaySeconds: 3
             timeoutSeconds: 3
-          resources:
-            limits:
-              memory: ${MEMORY_LIMIT}
           securityContext:
             capabilities: {}
             privileged: false
@@ -148,10 +148,6 @@ parameters:
   displayName: SonarQube Service Name
   name: SONARQUBE_SERVICE_NAME
   value: sonar
-- description: Maximum amount of memory the container can use.
-  displayName: Memory Limit
-  name: MEMORY_LIMIT
-  value: 1Gi
 - description: Volume space available for data, e.g. 512Mi, 2Gi.
   displayName: Data Volume Capacity
   name: DATA_VOLUME_CAPACITY
