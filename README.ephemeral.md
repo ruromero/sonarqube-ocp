@@ -1,6 +1,6 @@
-# SonarQube on OpenShift (Persistent)
+# SonarQube on OpenShift (Ephemeral)
 
-**NOTE: For the ephemeral deployment refer to [SonarQube on OpehShift (Ephemeral)](README.ephemeral.md)**
+This is an ephemeral version of [SonarQube on Openshift (Persistent)](README.md). Be aware that all changes will be lost when a pod is restarted.
 
 This document goes through an example of a full CI/CD workflow for a Java application.
 1. The application is installed from a Git repository
@@ -16,25 +16,18 @@ For that example the following components are required:
 
 All the required files are available in this GitHub repository under `ocp-resources`
 
-## Create all the Persistent Volumes
-**Note:** I have used `hostPath` for simplicity but any other solution should be fine as well.
-
 ## Install PostgreSQL
-The PostgreSQL will be installed using the following Persistent volume.
-```
-$ oc create -f ocp-resources/postgresql-pv.yaml
-persistentvolume "postgresql-volume" created
-```
-The username, password and database name are passed as arguments.
-```
-$ oc new-app postgresql-persistent -p POSTGRESQL_DATABASE=sonarqube -p POSTGRESQL_USER=sonar -p POSTGRESQL_PASSWORD=sonar
---> Deploying template "openshift/postgresql-persistent" to project sonardemo
+The PostgreSQL will be installed using the following command (The username, password and database name are passed as arguments)
 
-     PostgreSQL (Persistent)
+```
+$ oc new-app postgresql-ephemeral -p POSTGRESQL_DATABASE=sonarqube -p POSTGRESQL_USER=sonar -p POSTGRESQL_PASSWORD=sonar
+--> Deploying template "openshift/postgresql-ephemeral" to project sonardemo
+
+     PostgreSQL (Ephemeral)
      ---------
-     PostgreSQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/blob/master/9.5.
+     PostgreSQL database service, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/blob/master/9.5.
 
-     NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
+     WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
 
      The following service(s) have been created in your project: postgresql.
 
@@ -52,13 +45,11 @@ $ oc new-app postgresql-persistent -p POSTGRESQL_DATABASE=sonarqube -p POSTGRESQ
         * PostgreSQL Connection Username=sonar
         * PostgreSQL Connection Password=sonar
         * PostgreSQL Database Name=sonarqube
-        * Volume Capacity=1Gi
         * Version of PostgreSQL Image=9.5
 
 --> Creating resources ...
     secret "postgresql" created
     service "postgresql" created
-    persistentvolumeclaim "postgresql" created
     deploymentconfig "postgresql" created
 --> Success
     Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
@@ -67,74 +58,51 @@ $ oc new-app postgresql-persistent -p POSTGRESQL_DATABASE=sonarqube -p POSTGRESQ
 ```
 
 ## Install SonarQube
-First the Persistent volumes have to be created:
-* sonar-data-volume: Contains all the data related to the web application and Elasticsearch
-* sonar-extensions-volume: Persists all the installed extensions/plugins
 
+A template has been defined including the required elements like `Route`, `Service` and so forth. In order to create the elements it doesn’t necessarily need to be created, just processed but for the sake of reusability I have preferred the creation over the processing.
 ```
-$ oc create -f ocp-resources/sonar-pv.yaml
-persistentvolume "sonar-data-volume" created
-persistentvolume "sonar-extensions-volume" created
-```
-
-A template has been defined including the required elements like `ServiceAccount`, `PersitentVolumeClaim`, `Route`, `Service` and so forth. In order to create the elements it doesn’t necessarily need to be created, just processed but for the sake of reusability I have preferred the creation over the processing.
-```
-$ oc create -f ocp-resources/sonarqube-persistent-template.yaml -n openshift
-template "sonarqube-persistent" created
+$ oc create -f ocp-resources/sonarqube-ephemeral-template.yaml -n openshift
+template "sonarqube-ephemeral" created
 ```
 Once created it can be used to create a new application with the default values:
 ```
 $  oc new-app sonarqube-persistent
---> Deploying template "sonardemo/sonarqube-persistent" to project sonardemo
+--> Deploying template "sonardemo/sonarqube-ephemeral" to project sonardemo
 
-     SonarQube (Persistent)
+     SonarQube (Ephemeral)
      ---------
-     Sonarqube service, with persistent storage.
+     Sonarqube service, with ephemeral storage.
 
-     NOTE: You must have persistent volumes available in your cluster to use this template.
+     NOTE: Data will not be persistent across restarts
 
      A Sonarqube service has been created in your project.
 
      * With parameters:
         * SonarQube Service Name=sonar
-        * Memory Limit=1Gi
         * Data Volume Capacity=256Mi
         * Extensions Volume Capacity=256Mi
 
 --> Creating resources ...
     route "sonar" created
-    persistentvolumeclaim "sonar-data" created
-    persistentvolumeclaim "sonar-extensions" created
     deploymentconfig "sonar" created
-    serviceaccount "sonar" created
     service "sonar" created
 --> Success
     Access your application via route 'sonar-sonardemo.one37.192.168.55.12.xip.io'
     Run 'oc status' to view your app.
 ```
-The application will fail to initialize as it requires to run as “sonar” user. For that the service account needs to be added to the `anyuid` scc.
-```
-$ oadm policy add-scc-to-user anyuid -z sonar
-scc "anyuid" added to: ["system:serviceaccount:sonardemo:sonar"]
-```
 
 ## Install Jenkins
-The first step is, as before, to create the PersistentVolume.
-```
-$ oc create -f ocp-resources/jenkins-pv.yaml
-persistentvolume "jenkins-volume" created
-```
-When installing Jenkins persistent it is possible to specify which plugins to install. In this case, the SonarQube Scanner for Jenkins plugin is specified.
+When installing Jenkins it is possible to specify which plugins to install. In this case, the SonarQube Scanner for Jenkins plugin is specified.
 
 ```
-$ oc new-app jenkins-persistent -e INSTALL_PLUGINS=sonar:2.6.1
---> Deploying template "openshift/jenkins-persistent" to project sonardemo
+$ oc new-app jenkins-ephemeral -e INSTALL_PLUGINS=sonar:2.6.1
+--> Deploying template "openshift/jenkins-ephemeral" to project sonardemo
 
-     Jenkins (Persistent)
+     Jenkins (Ephemeral)
      ---------
-     Jenkins service, with persistent storage.
+     Jenkins service, without persistent storage.
 
-     NOTE: You must have persistent volumes available in your cluster to use this template.
+     WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing.
 
      A Jenkins service has been created in your project.  Log into Jenkins with your OpenShift account.  The tutorial at https://github.com/openshift/origin/blob/master/examples/jenkins/README.md contains more information about using this template.
 
@@ -143,13 +111,11 @@ $ oc new-app jenkins-persistent -e INSTALL_PLUGINS=sonar:2.6.1
         * Jenkins JNLP Service Name=jenkins-jnlp
         * Enable OAuth in Jenkins=true
         * Memory Limit=512Mi
-        * Volume Capacity=1Gi
         * Jenkins ImageStream Namespace=openshift
         * Jenkins ImageStreamTag=jenkins:latest
 
 --> Creating resources ...
     route "jenkins" created
-    persistentvolumeclaim "jenkins" created
     deploymentconfig "jenkins" created
     serviceaccount "jenkins" created
     rolebinding "jenkins_edit" created
@@ -167,7 +133,7 @@ $ oc get pods
 NAME                 READY     STATUS    RESTARTS   AGE
 jenkins-1-phxxq      1/1       Running   0          1h
 postgresql-1-kxgd9   1/1       Running   0          55m
-sonar-2-snkms        1/1       Running   0          27m
+sonar-1-snkms        1/1       Running   0          27m
 ```
 Besides, it should be able to access Jenkins in the following URL:
 
