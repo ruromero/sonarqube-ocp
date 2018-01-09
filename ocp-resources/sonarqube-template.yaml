@@ -63,20 +63,6 @@ objects:
         labels:
           name: ${SONARQUBE_SERVICE_NAME}
       spec:
-        initContainers:
-          - name: sonar-init
-            image: busybox
-            command:
-              - chown
-              - "-R"
-              - "100:101"
-              - "/sonar-data"
-              - "/sonar-extensions"
-            volumeMounts:
-              - mountPath: /sonar-data
-                name: ${SONARQUBE_SERVICE_NAME}-data
-              - mountPath: /sonar-extensions
-                name: ${SONARQUBE_SERVICE_NAME}-extensions
         containers:
         - capabilities: {}
           env:
@@ -86,7 +72,7 @@ objects:
             value: sonar
           - name: SONARQUBE_JDBC_URL
             value: jdbc:postgresql://postgresql:5432/sonarqube
-          image: 'sonarqube:lts-alpine'
+          image: 'tchughesiv/sonarqube-centos'
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9000
