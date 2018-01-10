@@ -77,13 +77,8 @@ $  oc new-app sonarqube-persistent
     persistentvolumeclaim "sonar-postgresql" created
     deploymentconfig "sonar-postgresql" created
 --> Success
-    Access your application via route 'sonar-sonardemo.one37.192.168.55.12.xip.io'
+    Access your application via route 'sonar-sonardemo.apps.example.com'
     Run 'oc status' to view your app.
-```
-The application will fail to initialize as it requires to run as “sonar” user. For that the service account needs to be added to the `anyuid` scc.
-```
-$ oadm policy add-scc-to-user anyuid -z sonar
-scc "anyuid" added to: ["system:serviceaccount:sonardemo:sonar"]
 ```
 
 ## Install Jenkins
@@ -124,7 +119,7 @@ $ oc new-app jenkins-postgresql -e INSTALL_PLUGINS=sonar:2.6.1
     service "jenkins-jnlp" created
     service "jenkins" created
 --> Success
-    Access your application via route 'jenkins-sonardemo.one37.192.168.55.12.xip.io'
+    Access your application via route 'jenkins-sonardemo.apps.example.com'
     Run 'oc status' to view your app.
 ```
 
@@ -139,11 +134,11 @@ sonar-1-snkms              1/1       Running   0          27m
 ```
 Besides, it should be able to access Jenkins in the following URL:
 
-    https://jenkins-sonardemo.one37.192.168.55.12.xip.io
+    https://jenkins-sonardemo.apps.example.com
 
 And SonarQube:
 
-    http://sonar-sonardemo.one37.192.168.55.12.xip.io
+    http://sonar-sonardemo.apps.example.com
 
 
 ## Configure SonarQube
@@ -230,7 +225,7 @@ route "springbootwebapp" exposed
 
 After the initial build, the application should be available on the URL defined in the route:
 
-    http://springbootwebapp-sonardemo.one37.192.168.55.12.xip.io
+    http://springbootwebapp-sonardemo.apps.example.com
 
 
 ## Analyze the code
@@ -241,9 +236,9 @@ In the console output it can be seen how the analysis took place:
 [INFO] Analysis report generated in 179ms, dir size=78 KB
 [INFO] Analysis reports compressed in 25ms, zip size=37 KB
 [INFO] Analysis report uploaded in 557ms
-[INFO] ANALYSIS SUCCESSFUL, you can browse http://sonar-sonardemo.one37.192.168.55.12.xip.io/dashboard/index/guru.springframework:spring-boot-web
+[INFO] ANALYSIS SUCCESSFUL, you can browse http://sonar-sonardemo.apps.example.com/dashboard/index/guru.springframework:spring-boot-web
 [INFO] Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
-[INFO] More about the report processing at http://sonar-sonardemo.one37.192.168.55.12.xip.io/api/ce/task?id=AWC7-HjI_ugAW623j7y-
+[INFO] More about the report processing at http://sonar-sonardemo.apps.example.com/api/ce/task?id=AWC7-HjI_ugAW623j7y-
 ```
 Finally, the build will be triggered and the application will be built using the latest version of the source code.
 ```
