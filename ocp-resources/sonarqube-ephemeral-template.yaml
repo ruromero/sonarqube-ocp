@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Template
 labels:
   template: sonarqube-ephemeral-template
-message: A Sonarqube service has been created in your project.
+message: A Sonarqube service has been created in your project. You can access using admin/admin.
 metadata:
   annotations:
     description: |-
@@ -45,13 +45,6 @@ objects:
       spec:
         containers:
         - capabilities: {}
-          env:
-          - name: SONARQUBE_JDBC_USERNAME
-            value: sonar
-          - name: SONARQUBE_JDBC_PASSWORD
-            value: sonar
-          - name: SONARQUBE_JDBC_URL
-            value: jdbc:postgresql://postgresql:5432/sonarqube
           image: 'tchughesiv/sonarqube-centos'
           imagePullPolicy: IfNotPresent
           ports:
@@ -71,6 +64,11 @@ objects:
               port: 9000
             initialDelaySeconds: 3
             timeoutSeconds: 3
+          resources:
+            requests:
+              memory: ${SONARQUBE_MEMORY_LIMITS}
+            limits:
+              memory: ${SONARQUBE_MEMORY_LIMITS}
           securityContext:
             capabilities: {}
             privileged: false
@@ -97,13 +95,8 @@ parameters:
   displayName: SonarQube Service Name
   name: SONARQUBE_SERVICE_NAME
   value: sonar
-- description: Volume space available for data, e.g. 512Mi, 2Gi.
-  displayName: Data Volume Capacity
-  name: DATA_VOLUME_CAPACITY
+- description: SonarQube container memory limits.
+  displayName: Memory Limits
+  name: SONARQUBE_MEMORY_LIMITS
   required: true
-  value: 256Mi
-- description: Volume space available for extensions, e.g. 512Mi, 2Gi.
-  displayName: Extensions Volume Capacity
-  name: EXTENSIONS_VOLUME_CAPACITY
-  required: true
-  value: 256Mi
+  value: 2Gi

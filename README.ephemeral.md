@@ -12,50 +12,8 @@ For that example the following components are required:
 1. An example application on a Git repository
 1. Jenkins for the continuous integration
 1. SonarQube for the code analysis
-1. PostgreSQL for the persistence
 
 All the required files are available in this GitHub repository under `ocp-resources`
-
-## Install PostgreSQL
-The PostgreSQL will be installed using the following command (The username, password and database name are passed as arguments)
-
-```
-$ oc new-app postgresql-ephemeral -p POSTGRESQL_DATABASE=sonarqube -p POSTGRESQL_USER=sonar -p POSTGRESQL_PASSWORD=sonar
---> Deploying template "openshift/postgresql-ephemeral" to project sonardemo
-
-     PostgreSQL (Ephemeral)
-     ---------
-     PostgreSQL database service, without persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/blob/master/9.5.
-
-     WARNING: Any data stored will be lost upon pod destruction. Only use this template for testing
-
-     The following service(s) have been created in your project: postgresql.
-
-            Username: sonar
-            Password: sonar
-       Database Name: sonarqube
-      Connection URL: postgresql://postgresql:5432/
-
-     For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/blob/master/9.5.
-
-     * With parameters:
-        * Memory Limit=512Mi
-        * Namespace=openshift
-        * Database Service Name=postgresql
-        * PostgreSQL Connection Username=sonar
-        * PostgreSQL Connection Password=sonar
-        * PostgreSQL Database Name=sonarqube
-        * Version of PostgreSQL Image=9.5
-
---> Creating resources ...
-    secret "postgresql" created
-    service "postgresql" created
-    deploymentconfig "postgresql" created
---> Success
-    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
-     'oc expose svc/postgresql'
-    Run 'oc status' to view your app.
-```
 
 ## Install SonarQube
 
