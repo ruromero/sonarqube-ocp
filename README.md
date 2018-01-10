@@ -19,55 +19,13 @@ All the required files are available in this GitHub repository under `ocp-resour
 ## Create all the Persistent Volumes
 **Note:** I have used `hostPath` for simplicity but any other solution should be fine as well.
 
-## Install PostgreSQL
-The PostgreSQL will be installed using the following Persistent volume.
+## Install SonarQube
+First the Persistent volumes have to be created:
+* postgresql-volume: To be used by PostgreSQL server
 ```
 $ oc create -f ocp-resources/postgresql-pv.yaml
 persistentvolume "postgresql-volume" created
 ```
-The username, password and database name are passed as arguments.
-```
-$ oc new-app postgresql-persistent -p POSTGRESQL_DATABASE=sonarqube -p POSTGRESQL_USER=sonar -p POSTGRESQL_PASSWORD=sonar
---> Deploying template "openshift/postgresql-persistent" to project sonardemo
-
-     PostgreSQL (Persistent)
-     ---------
-     PostgreSQL database service, with persistent storage. For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/blob/master/9.5.
-
-     NOTE: Scaling to more than one replica is not supported. You must have persistent volumes available in your cluster to use this template.
-
-     The following service(s) have been created in your project: postgresql.
-
-            Username: sonar
-            Password: sonar
-       Database Name: sonarqube
-      Connection URL: postgresql://postgresql:5432/
-
-     For more information about using this template, including OpenShift considerations, see https://github.com/sclorg/postgresql-container/blob/master/9.5.
-
-     * With parameters:
-        * Memory Limit=512Mi
-        * Namespace=openshift
-        * Database Service Name=postgresql
-        * PostgreSQL Connection Username=sonar
-        * PostgreSQL Connection Password=sonar
-        * PostgreSQL Database Name=sonarqube
-        * Volume Capacity=1Gi
-        * Version of PostgreSQL Image=9.5
-
---> Creating resources ...
-    secret "postgresql" created
-    service "postgresql" created
-    persistentvolumeclaim "postgresql" created
-    deploymentconfig "postgresql" created
---> Success
-    Application is not exposed. You can expose services to the outside world by executing one or more of the commands below:
-     'oc expose svc/postgresql'
-    Run 'oc status' to view your app.
-```
-
-## Install SonarQube
-First the Persistent volumes have to be created:
 * sonar-data-volume: Contains all the data related to the web application and Elasticsearch
 * sonar-extensions-volume: Persists all the installed extensions/plugins
 
@@ -77,29 +35,35 @@ persistentvolume "sonar-data-volume" created
 persistentvolume "sonar-extensions-volume" created
 ```
 
-A template has been defined including the required elements like `ServiceAccount`, `PersitentVolumeClaim`, `Route`, `Service` and so forth. In order to create the elements it doesn’t necessarily need to be created, just processed but for the sake of reusability I have preferred the creation over the processing.
+A template has been defined including the required elements like `ServiceAccount`, `PersitentVolumeClaim`, `Route`, `Service`, `Secret`, `DeploymentConfig` for deploying both SonarQube and PostgreSQL. In order to create the elements it doesn’t necessarily need to be created, just processed but for the sake of reusability I have preferred the creation over the processing.
 ```
-$ oc create -f ocp-resources/sonarqube-persistent-template.yaml -n openshift
-template "sonarqube-persistent" created
+$ oc create -f ocp-resources/sonarqube-postgresql-template.yaml -n openshift
+template "sonarqube-postgresql" created
 ```
 Once created it can be used to create a new application with the default values:
 ```
 $  oc new-app sonarqube-persistent
---> Deploying template "sonardemo/sonarqube-persistent" to project sonardemo
+--> Deploying template "sonardemo/sonarqube-postgresql" to project sonardemo
 
-     SonarQube (Persistent)
+     SonarQube PostgreSQL (Persistent)
      ---------
-     Sonarqube service, with persistent storage.
+     Sonarqube service, with PostgreSQL persistent storage.
 
      NOTE: You must have persistent volumes available in your cluster to use this template.
 
-     A Sonarqube service has been created in your project.
+     A Sonarqube service has been created in your project. You can access using admin/admin.
 
      * With parameters:
         * SonarQube Service Name=sonar
-        * Memory Limit=1Gi
         * Data Volume Capacity=256Mi
         * Extensions Volume Capacity=256Mi
+        * Memory Limits=2Gi
+        * PostgreSQL Username=sonarbwDs # generated
+        * PostgreSQL Password=QwqgcypemxsNAXLo # generated
+        * PostgreSQL Volume Capacity=1Gi
+        * PostgreSQL Memory Limit=512Mi
+        * Version of PostgreSQL Image=9.5
+        * Namespace=openshift
 
 --> Creating resources ...
     route "sonar" created
@@ -108,6 +72,10 @@ $  oc new-app sonarqube-persistent
     deploymentconfig "sonar" created
     serviceaccount "sonar" created
     service "sonar" created
+    secret "sonar-postgresql" created
+    service "sonar-postgresql" created
+    persistentvolumeclaim "sonar-postgresql" created
+    deploymentconfig "sonar-postgresql" created
 --> Success
     Access your application via route 'sonar-sonardemo.one37.192.168.55.12.xip.io'
     Run 'oc status' to view your app.
