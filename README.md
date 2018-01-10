@@ -95,7 +95,7 @@ persistentvolume "jenkins-volume" created
 When installing Jenkins persistent it is possible to specify which plugins to install. In this case, the SonarQube Scanner for Jenkins plugin is specified.
 
 ```
-$ oc new-app jenkins-persistent -e INSTALL_PLUGINS=sonar:2.6.1
+$ oc new-app jenkins-postgresql -e INSTALL_PLUGINS=sonar:2.6.1
 --> Deploying template "openshift/jenkins-persistent" to project sonardemo
 
      Jenkins (Persistent)
@@ -132,10 +132,10 @@ $ oc new-app jenkins-persistent -e INSTALL_PLUGINS=sonar:2.6.1
 At this stage, all three pods should be running and healthy.
 ```
 $ oc get pods
-NAME                 READY     STATUS    RESTARTS   AGE
-jenkins-1-phxxq      1/1       Running   0          1h
-postgresql-1-kxgd9   1/1       Running   0          55m
-sonar-2-snkms        1/1       Running   0          27m
+NAME                       READY     STATUS    RESTARTS   AGE
+jenkins-1-phxxq            1/1       Running   0          1h
+sonar-postgresql-1-kxgd9   1/1       Running   0          55m
+sonar-1-snkms              1/1       Running   0          27m
 ```
 Besides, it should be able to access Jenkins in the following URL:
 
@@ -162,7 +162,7 @@ SonarQube installs some plugins and defines some quality profiles for the most c
 First of all the Sonar server needs to be configured. Under the “Manage Jenkins” → “Configure System” menu there is the “SonarQube servers” section.
 In this section, select the “Enable injection of SonarQube server configuration as build environment variables” checkbox and click “Add SonarQube”. After that provide a name, the URL of the route and the token generated in the previous step.
 
-![jenkins configuration](https://github.com/ruromero/sonarqube-ocp/raw/master/images/jenkins_configuration.jpg)
+![jenkins configuration](images/jenkins_configuration.jpg)
 
 **NOTE:** The service endpoint (http://sonar:9000) should be enough for Jenkins to communicate with SonarQube, however some links are embedded in the Jenkins UI that redirects the user to the SonarQube web console but the browser won’t be able to show resolve the address as it is internal to the cluster.
 
@@ -258,10 +258,10 @@ Exiting "Trigger OpenShift Build" successfully; build "springbootwebapp-2" has c
 ```
 
 In the Jenkins project dashboard there are several references to SonarQube
-![jenkins build](https://github.com/ruromero/sonarqube-ocp/raw/master/images/jenkins_build.jpg)
+![jenkins build](images/jenkins_build.jpg)
 
 And the results can be accessed by following any of the SonarQube links.
-![sonarqube project](https://github.com/ruromero/sonarqube-ocp/raw/master/images/sonarqube.jpg)
+![sonarqube project](images/sonarqube.jpg)
 
 ## Further considerations
 In this example I didn’t configure any trigger for the builds but the Jenkins project can be configured to either periodically poll the Git repository, to do periodical builds or even to listen to Webhooks.
