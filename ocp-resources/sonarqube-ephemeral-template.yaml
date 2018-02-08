@@ -45,7 +45,7 @@ objects:
       spec:
         containers:
         - capabilities: {}
-          image: 'tchughesiv/sonarqube-centos'
+          image: 'registry.centos.org/rhsyseng/sonarqube:latest'
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9000

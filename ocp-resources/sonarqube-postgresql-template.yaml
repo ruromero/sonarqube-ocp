@@ -72,7 +72,7 @@ objects:
             value: ${POSTGRESQL_PASSWORD}
           - name: SONARQUBE_JDBC_URL
             value: jdbc:postgresql://${SONARQUBE_SERVICE_NAME}-postgresql:5432/sonarqube
-          image: 'tchughesiv/sonarqube-centos'
+          image: 'registry.centos.org/rhsyseng/sonarqube:latest '
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9000
