@@ -1,0 +1,9 @@
+this is official helm chart for SonarQube
+1. Add helm repo in yor local
+helm repo add oteemocharts https://oteemo.github.io/charts
+2. Install SonarQube
+helm install sonarqube oteemocharts/sonarqube --set OpenShift.enabled=true --set serviceAccount.create=true --set postgresql.serviceAccount.enabled=true --set postgresql.securityContext.enabled=false --set postgresql.volumePermissions.enabled=true --set postgresql.volumePermissions.securityContext.runAsUser="auto"
+This is official documentation page:
+https://github.com/Oteemo/charts/tree/master/charts/sonarqube
+you can customize the installation by configuring these properties,
+https://github.com/Oteemo/charts/tree/master/charts/sonarqube#configuration
